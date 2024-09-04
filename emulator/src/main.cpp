@@ -309,7 +309,12 @@ static void run_program(
 			printf("Introduced to symbol function: 0x%" PRIX64 "\n", uint64_t(addr));
 		});
 
-	if constexpr (full_linux_guest)
+    // stdin_func = long(*)(const Machine&, char*, size_t);
+	machine.set_stdin(
+		[](const riscv::Machine<W> &machine, char *buf,
+			size_t size) -> long { return read(0, buf, size); });
+
+    if constexpr (full_linux_guest)
 	{
 		std::vector<std::string> env = {
 			"LC_CTYPE=C", "LC_ALL=C", "RUST_BACKTRACE=full"
